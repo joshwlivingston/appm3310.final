@@ -32,9 +32,9 @@ eigenvalues_power_method <- function(mat,
   lambdas <- vector("numeric")
   ## iterate the power method for specified iterations
   for (i in 1:iterations) {
-    r_new <- mat %*% ev
-    r_normalized <- r_new / sqrt(sum(r_new^2))
-    new_lambda <- t(r_normalized) %*% mat %*% r_normalized
+    ev_new <- mat %*% ev
+    ev_normalized <- ev_new / sqrt(sum(ev_new^2))
+    new_lambda <- t(ev_normalized) %*% mat %*% ev_normalized
 
     new_lambda_inf <- identical(new_lambda[1, 1], Inf)
     converged <- abs(new_lambda - old_lamdba) < convergance
@@ -43,7 +43,7 @@ eigenvalues_power_method <- function(mat,
 
     old_lamdba <- new_lambda[1, 1]
     lambdas[i] <- old_lamdba
-    ev <- r_new
+    ev <- ev_normalized
   }
 
   lambda_table <- tibble::tibble(
@@ -54,7 +54,7 @@ eigenvalues_power_method <- function(mat,
   ev <- ev[, 1]
   names(ev) <- team_names
   ev_table <- tibble::enframe(ev, "team", "eigenvector")
-  return(list(eigenvalue_table = ev_table, lambda_table = lambda_table))
+  return(list(eigenvector_table = ev_table, eigenvalue_table = lambda_table))
 }
 
 
@@ -73,7 +73,7 @@ eigenvalues_power_method <- function(mat,
 #' @export
 rankings_from_eigenvalues <- function(eigenvalues, name_col = "team") {
   rankings_tbl <-
-    eigenvalues$eigenvalue_table |>
+    eigenvalues$eigenvector_table |>
     dplyr::mutate(rank = rank(-.data$eigenvector)) |>
     dplyr::arrange(.data$rank)
   return(rankings_tbl)
@@ -91,7 +91,7 @@ rankings_from_eigenvalues <- function(eigenvalues, name_col = "team") {
 #' @importFrom rlang .data
 #' @export
 plot_lambdas <- function(eigenvalues) {
-  eigenvalues$lambda_table |>
+  eigenvalues$eigenvalue_table |>
     ggplot2::ggplot() +
     ggplot2::aes(.data$iter, .data$lambda) +
     ggplot2::geom_line() +

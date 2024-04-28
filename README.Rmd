@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r setup-knitr, include = FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
   collapse = TRUE,
@@ -23,18 +23,16 @@ To use the package, you first need to install it.
 
 You can install the development version of appm3310.final like so:
 
-``` r
-remotes::install_git("https://github.com/joshwlivingston/appm3310.final")
+```{r install-package, eval=FALSE}
+library(remotes)
+install_git("https://github.com/joshwlivingston/appm3310.final")
 ```
-
-Once installed, load the package with `library(appm3310.final)`
-```{r}
-library(appm3310.final)
-```
+<br>
 
 ## Prepared data
-You can load the cleaned data itself, which is loaded with the package
+After installation, you can load the cleaned data, which comes with the package.
 ```{r load-cleaned-data}
+library(appm3310.final)
 ncaam |> head()
 ```
 <br>
@@ -138,6 +136,7 @@ To view the results from the iteration, you can call `plot_lambdas()`
 ```{r lambda-iteration-plot}
 ncaam_eigenvalues |> plot_lambdas()
 ```
+<br>
 
 To compute the rankings, you can call `rankings_from_eigenvalues()`
 ```{r compute-rankings}
