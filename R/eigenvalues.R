@@ -54,7 +54,7 @@ eigenvalues_power_method <- function(mat,
   ev <- ev[, 1]
   names(ev) <- team_names
   ev_table <- tibble::enframe(ev, "team", "eigenvector")
-  return(list(eigenvalue_table = ev_table, lambda_table = lambda_table))
+  return(list(eigenvector_table = ev_table, eigenvalue_table = lambda_table))
 }
 
 
@@ -73,7 +73,7 @@ eigenvalues_power_method <- function(mat,
 #' @export
 rankings_from_eigenvalues <- function(eigenvalues, name_col = "team") {
   rankings_tbl <-
-    eigenvalues$eigenvalue_table |>
+    eigenvalues$eigenvector_table |>
     dplyr::mutate(rank = rank(-.data$eigenvector)) |>
     dplyr::arrange(.data$rank)
   return(rankings_tbl)
@@ -91,7 +91,7 @@ rankings_from_eigenvalues <- function(eigenvalues, name_col = "team") {
 #' @importFrom rlang .data
 #' @export
 plot_lambdas <- function(eigenvalues) {
-  eigenvalues$lambda_table |>
+  eigenvalues$eigenvalue_table |>
     ggplot2::ggplot() +
     ggplot2::aes(.data$iter, .data$lambda) +
     ggplot2::geom_line() +
