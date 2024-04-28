@@ -65,6 +65,43 @@ clean_ncaa_data <- function(ncaa_data) {
 }
 
 
+#' Read NCAA men's basketball rankings
+#'
+#' Returns unprocessed AP rankings of NCAA men's basketball temas following the 2023-24
+#' season. Using this function directly is discouraged. Instead, load the ap rankings
+#' directly with `ap`. For more information, run `?ap`.
+#'
+#' @return A tibble with one column
+read_ap_rankings <- function() {
+  googlesheets4::read_sheet(googlesheet_url(), sheet = "AP", skip = 1, col_names = FALSE)
+}
+
+
+
+#' Clean NCAA men's basketball AP rankings
+#'
+#' Cleans data as read in by [read_ap_rankings()]. Using this function directly is
+#' discouraged. Instead, load the ap rankings directly with `ap`. For more information,
+#' run `?ap`.
+#'
+#' @param ap_data tibble returned by [read_ap_rankings()]
+#'
+#' @importFrom rlang .data
+#' @return A tibble
+clean_ap_rankings <- function(ap_data) {
+  ap_data_clean <-
+    ap_data |>
+    dplyr::rename(x = "...1") |>
+    dplyr::transmute(
+      team = extract_team(.data$x),
+      ap_rank = stringr::str_extract(.data$x, "\\d+") |> as.integer()
+    ) |>
+    dplyr::arrange(.data$ap_rank)
+
+  return(ap_data_clean)
+}
+
+
 #' Convert to matrix
 #'
 #' @param tbl a table resulting from one of the `ranking_table_*()` family of functions

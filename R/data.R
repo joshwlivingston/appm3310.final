@@ -17,3 +17,17 @@
 #'   \item{opp_score}{The `opp`'s score}
 #' }
 "ncaam"
+
+
+#' NCAA Men's basketball data rankings
+#'
+#' Collected and cleaned AP rankings for NCAA men's basketball following the 2023-24
+#' regular season basketball data.
+#'
+#' @format ## `ap`
+#' A data frame with 25 rows and 2 columns:
+#' \describe{
+#'   \item{team}{The NCAA men's basketball team}
+#'   \item{ap_rank}{The AP rank following the 2023-24 regular season}
+#' }
+"ap"
