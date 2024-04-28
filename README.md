@@ -13,20 +13,19 @@ To use the package, you first need to install it.
 You can install the development version of appm3310.final like so:
 
 ``` r
-remotes::install_git("https://github.com/joshwlivingston/appm3310.final")
+library(remotes)
+install_git("https://github.com/joshwlivingston/appm3310.final")
 ```
 
-Once installed, load the package with `library(appm3310.final)`
-
-``` r
-library(appm3310.final)
-```
+<br>
 
 ## Prepared data
 
-You can load the cleaned data itself, which is loaded with the package
+After installation, you can load the cleaned data, which comes with the
+package.
 
 ``` r
+library(appm3310.final)
 ncaam |> head()
 #>                       team       date home_away                      opp result
 #> 1              Texas State 2023-11-06      away              Little Rock      L
@@ -180,7 +179,7 @@ str(ncaam_eigenvalues)
 #> List of 2
 #>  $ eigenvector_table: tibble [362 × 2] (S3: tbl_df/tbl/data.frame)
 #>   ..$ team       : chr [1:362] "Little Rock" "Southeast Missouri State" "Louisiana State" "TCU" ...
-#>   ..$ eigenvector: num [1:362] 8.19e+32 1.25e+33 3.32e+31 8.70e+32 7.85e+32 ...
+#>   ..$ eigenvector: num [1:362] 0.04999 0.07598 0.00202 0.0531 0.0479 ...
 #>  $ eigenvalue_table : tibble [28 × 2] (S3: tbl_df/tbl/data.frame)
 #>   ..$ iter  : int [1:28] 1 2 3 4 5 6 7 8 9 10 ...
 #>   ..$ lambda: num [1:28] 14.9 15 15 15 15 ...
@@ -195,6 +194,7 @@ ncaam_eigenvalues |> plot_lambdas()
 ```
 
 <img src="man/figures/README-lambda-iteration-plot-1.png" width="100%" />
+<br>
 
 To compute the rankings, you can call `rankings_from_eigenvalues()`
 
@@ -205,16 +205,16 @@ ncaam_eigenvalues |>
 #> # A tibble: 10 × 3
 #>    team             eigenvector  rank
 #>    <chr>                  <dbl> <dbl>
-#>  1 Michigan State       1.64e33     1
-#>  2 Samford              1.60e33     2
-#>  3 VCU                  1.52e33     3
-#>  4 Sacramento State     1.47e33     4
-#>  5 Purdue               1.43e33     5
-#>  6 Lindenwood           1.41e33     6
-#>  7 Louisiana–Monroe     1.41e33     7
-#>  8 Texas State          1.39e33     8
-#>  9 Eastern Illinois     1.38e33     9
-#> 10 High Point           1.38e33    10
+#>  1 Michigan State        0.100      1
+#>  2 Samford               0.0977     2
+#>  3 VCU                   0.0929     3
+#>  4 Sacramento State      0.0895     4
+#>  5 Purdue                0.0873     5
+#>  6 Lindenwood            0.0862     6
+#>  7 Louisiana–Monroe      0.0859     7
+#>  8 Texas State           0.0846     8
+#>  9 Eastern Illinois      0.0844     9
+#> 10 High Point            0.0843    10
 ```
 
 <br><br>

@@ -32,9 +32,9 @@ eigenvalues_power_method <- function(mat,
   lambdas <- vector("numeric")
   ## iterate the power method for specified iterations
   for (i in 1:iterations) {
-    r_new <- mat %*% ev
-    r_normalized <- r_new / sqrt(sum(r_new^2))
-    new_lambda <- t(r_normalized) %*% mat %*% r_normalized
+    ev_new <- mat %*% ev
+    ev_normalized <- ev_new / sqrt(sum(ev_new^2))
+    new_lambda <- t(ev_normalized) %*% mat %*% ev_normalized
 
     new_lambda_inf <- identical(new_lambda[1, 1], Inf)
     converged <- abs(new_lambda - old_lamdba) < convergance
@@ -43,7 +43,7 @@ eigenvalues_power_method <- function(mat,
 
     old_lamdba <- new_lambda[1, 1]
     lambdas[i] <- old_lamdba
-    ev <- r_new
+    ev <- ev_normalized
   }
 
   lambda_table <- tibble::tibble(
