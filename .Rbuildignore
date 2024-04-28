@@ -1,0 +1,8 @@
+^renv$
+^renv\.lock$
+^appm3310\.final\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^dev$
+^README\.Rmd$
+^data-raw$
