@@ -1,0 +1,148 @@
+---
+title: "Power-ful rankings of NCAA men's basketball teams"
+format: 
+  pdf:
+    mainfont: Liberation Serif
+    monofont: Liberation Mono
+    fontsize: 12px
+    colorlinks: false
+links-as-notes: true
+footnotes-hover: true
+author: "Hugo Hinckfuss, Josh Livingston, Magnus Miller (Section #002)"
+date: 2024-04-29
+abstract: This is the abstract
+execute:
+  echo: false
+  warning: false
+editor: visual
+---
+
+```{r load-packages}
+library(appm3310.final)
+
+library(dplyr)
+library(purrr)
+library(ggplot2)
+
+library(gt)
+```
+
+```{r setup-gt}
+library(knitr)
+knit_print.gt <- function(x, ...) {
+  stringr::str_c(
+    "<div style='all:initial';>\n", 
+    gt::as_raw_html(x), 
+    "\n</div>"
+  ) |> 
+    knitr::asis_output()
+    
+}
+registerS3method(
+  "knit_print", 'gt_tbl', knit_print.gt, 
+  envir = asNamespace("gt")
+)
+```
+
+## **Computation**
+
+### **Data**
+
+We obtained [team-game level data](https://docs.google.com/spreadsheets/d/1-KL_Ib_YSkrnA24nWCGpmx8Y35xYIG9VmKAH71I3ObU) from [sports-reference.com](https://stathead.com/basketball/cbb/team-game-finder.cgi?request=1&comp_type=reg&game_status=1&order_by=date&match=team_game&year_max=2024&order_by_asc=1&timeframe=seasons&comp_id=NCAAM&year_min=2024) for the 2023-24 NCAA men's regular season. After doing basic data preparation, we bundled the data in an R package in this report. The R package, including the data and code for the computation, figures, and tables, is available on [Github](https://github.com/joshwlivingston/appm3310.final).
+
+A sample of the data is available below. In total we have a 10,654 x 7 dataset. There are two rows per game in, one row per team. And for each team-game with have 7 columns: the team, date, home/away designation, opponent, result, team's score, and opponent's score.
+
+```{r preview-data}
+#| fig-align: center
+
+ncaam |> 
+  head(10) |> 
+  select(team, opp, result, team_score, opp_score) |> 
+  gt() |> 
+  tab_caption("Sample of prepared NCAA men's basketball data")
+```
+
+<br>
+
+### Eigenvector computation
+
+#### Win-loss matrix
+
+We explore various methodologies to compute $a_{ij}$. First, we take the result of each game, and assign to the team a 0 for a loss, a 0.5 for a tie, and a 1 for a win. Then, we add the results and aggregate into a square matrix, denoted $A_{1}$ with entries $a_{1ij}: i,j=1,2,...,362$. A sample of this matrix is shown below. For simplicity, we'll let $S_{1}$ refer to the $4x4$ sample of $A_{1}$ with corresponding entries $s_{1ij}: i,j=1,2,3,4$.
+
+```{r a1-preview}
+ncaam_a1_tbl <- 
+  ncaam |> 
+  ranking_table_prep_direct_win_loss()
+
+final_four <- c("Duke", "NC State", "Purdue", "Tennessee")
+ncaam_a1_tbl |> 
+  view_subset(final_four) |> 
+  gt(rowname_col = "team") |> 
+  tab_caption(md("Sample of win-loss matrix"))
+```
+
+<br>
+
+The matrix entries $s_{1ij}\in S_{1}$ line up with team-game level results from the regular season.
+
+```{r final-four-game-results}
+game_result_caption <- 
+  "Regular season results for teams in the NCAA men's 2024 final four"
+
+ncaam |> 
+  filter(team %in% final_four & opp %in% final_four) |> 
+  mutate(
+    team_opp = map2(team, opp, c),
+    team_opp = map(team_opp, sort),
+    team_opp = map_chr(team_opp, paste, collapse = "")
+  ) |> 
+  mutate(i = row_number(), .by = "team_opp") |> 
+  filter(i == 1) |> 
+  select(-team_opp, -i) |> 
+  gt() |> 
+  tab_caption(game_result_caption)
+```
+
+A potential downside to this method, is that teams that have never matched have the same entry for $s_{ij}$ as teams that have lost to another team. For both of this scenarios, $s_{ij}=0$. You can see that $s_{21}=s_{23}=0$, where $s_{21}=0$ represents NC State's loss to Duke, and $s_{23}=0$ represents NC State and Purdue never having played a game against each other in the regular season So, in this scenario, we lose information about losses. This can lead to teams with losses to have an inflated ranking.
+
+#### Eigenvalue approximation
+
+We denote the ranking eigenvector $r$ for matrix $A_{1}$ as $r_{1}$.
+
+To approximate $r_{1}$, we employ the power method. At each step of the power method, we compute the approximate ranking vector $\lambda_{1i}$ where $i$ is the iteration step of the power method approximation, and $\lim_{i \to \inf} \lambda_{1i}=r_{1}$.
+
+After approximation, we observe $\lambda_{1i}$ converging to $r_{1}$, shown in the figure below.
+
+```{r a1-lambda-plot}
+ncaam_a1_eigenvalues <- 
+  ncaam_a1_tbl |> 
+  to_matrix() |> 
+  eigenvalues_power_method()
+
+eigenvalue_table_a1 <- ncaam_a1_eigenvalues$eigenvalue_table
+iterations_a1 <- nrow(eigenvalue_table_a1)
+eigenvalue_a1 <- eigenvalue_table_a1$lambda[iterations_a1]
+
+plot_caption <- sprintf(
+  "Values of lambda converge to approximately %.3f after %i iterations",
+  eigenvalue_a1, iterations_a1
+)
+
+ncaam_a1_eigenvalues |> 
+  plot_lambdas() + 
+  geom_hline(yintercept = eigenvalue_a1, linetype = "dashed") +
+  labs(caption = plot_caption)
+```
+
+We use the approximated eigenvalue to compute the approximate eigenvector. We can use this eigenvector to compute rankings for NCAA men's basketball teams following the 2023-24 season. The rankings are shown below for the AP top 10 teams.
+
+```{r ranking-comparison}
+ncaam_a1_eigenvalues |> 
+  rankings_from_eigenvalues() |> 
+  head(10) |> 
+  gt() |> 
+  fmt_number(columns = "eigenvector", decimals = 4) |> 
+  fmt_integer(columns = "rank") |> 
+  tab_caption("Rankings for teams finishing in the AP top 10 as calculated by the win-loss method")
+```
