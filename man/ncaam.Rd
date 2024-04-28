@@ -24,8 +24,8 @@ something else}
 ncaam
 }
 \description{
-Collected and cleaned NCAA men's basketball data. This data is ready to be
-prepared for ranking using a \verb{ranking_table_prep_*()} function. The data is at the
-team-game level. That is, there are two rows per game: one per team.
+Collected and cleaned NCAA men's 2023-24 regular season basketball data. This data is
+ready to be prepared for ranking using a \verb{ranking_table_prep_*()} function. The data
+is at the team-game level. That is, there are two rows per game: one per team.
 }
 \keyword{datasets}
