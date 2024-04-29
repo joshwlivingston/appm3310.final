@@ -141,7 +141,6 @@ ncaam_eigenvalues |> plot_lambdas()
 To compute the rankings, you can call `rankings_from_eigenvalues()`
 ```{r compute-rankings}
 ncaam_eigenvalues |> 
-  rankings_from_eigenvalues() |> 
-  head(10)
+  rankings_from_eigenvalues()
 ```
 <br><br>

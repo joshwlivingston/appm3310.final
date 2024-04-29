@@ -10,7 +10,6 @@ links-as-notes: true
 footnotes-hover: true
 author: "Hugo Hinckfuss, Josh Livingston, Magnus Miller (Section #002)"
 date: 2024-04-29
-abstract: This is the abstract
 execute:
   echo: false
   warning: false
@@ -22,6 +21,7 @@ library(appm3310.final)
 
 library(dplyr)
 library(purrr)
+library(tibble)
 library(ggplot2)
 
 library(gt)
@@ -44,7 +44,25 @@ registerS3method(
 )
 ```
 
-## **Computation**
+## Abstract
+
+## Attribution
+
+## Introduction
+
+Every spring, the fervor surrounding collegiate basketball peaks as fans engage in perpetual discourse over which team will reign supreme come the end of March. However, the process of determining the best teams is often clouded by subjective polls and rankings, such as those conducted by the AP, leaving room for confusion, disagreement, and frustration among enthusiasts, who will endlessly affirm the future success of their respective teams. While some publications offer alternative indices based on various mathematical formulas, they often remain shrouded in mystery to the general public due to the perceived complexity associated with mathematics.
+
+Our group's interest in ranking collegiate basketball teams reached a pinnacle during this year's March Madness tournament, where multiple high seeds succumbed to the unexpected success of a poorly seeded team. These upsets prompted the group to explore a future where a mathematically-driven ranking system could not only align with the conclusions drawn by traditional voter-based polls but also aid in accurately predicting the teams' success in the tournament. In this pursuit, we discovered that numerous ranking methodologies rely heavily on the Perron-Frobenius theorem, which can offer an elegant solution to the challenge of uneven paired competition, wherein teams face disparate opponents throughout the season.
+
+Once we have developed a comprehensive ranking system, we can then extend the system to assist with numerous systems beyond basketball, such as establishing rankings in other sports or other complex systems. Despite efforts to reduce subjectivity, ranking systems cannot completely eradicate it. Varying methodologies may produce different results for the top-ranked team, which will be largely influenced by the algorithm's emphasized factors set by us or a future user.
+
+This paper will explore various ranking methods, showcasing the applications of the Perron-Frobenius theorem, eigenvalue computation techniques, fixed-point theorems, and probabilistic modeling. The initial method discussed in the paper presents the ranking problem as a linear eigenvalue problem, where we will utilize the Perron-Frobenius theorem directly. Next.. **have to clarify which other methods we will use then will complete this section.**
+
+Finally, we will conclude by presenting our results from the application of the various ranking systems devised in an attempt to show a collegiate basketball ranking that is more reflective of the true capacities of the teams competing in March Madness.
+
+## Mathematical Formulation
+
+## **Numerical Results**
 
 ### **Data**
 
@@ -84,6 +102,10 @@ ncaam_a1_tbl |>
 
 <br>
 
+In matrix notation, the matrix $S$ is $$ 
+S=\begin{pmatrix} 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 1 & 0 & 0 \end{pmatrix}
+$$
+
 The matrix entries $s_{1ij}\in S_{1}$ line up with team-game level results from the regular season.
 
 ```{r final-four-game-results}
@@ -108,9 +130,9 @@ A potential downside to this method, is that teams that have never matched have 
 
 #### Eigenvalue approximation
 
-We denote the ranking eigenvector $r$ for matrix $A_{1}$ as $r_{1}$.
+We denote the eigenvalue $r$ for matrix $A_{1}$ as $r_{1}$.
 
-To approximate $r_{1}$, we employ the power method. At each step of the power method, we compute the approximate ranking vector $\lambda_{1i}$ where $i$ is the iteration step of the power method approximation, and $\lim_{i \to \inf} \lambda_{1i}=r_{1}$.
+To approximate $r_{1}$, we employ the power method. At each step of the power method, we compute the approximate eigenvalue $\lambda_{1i}$ where $i$ is the iteration step of the power method approximation, and $$\lim_{i  \to \inf} \lambda_{1i}=r_{1}$$
 
 After approximation, we observe $\lambda_{1i}$ converging to $r_{1}$, shown in the figure below.
 
@@ -135,14 +157,155 @@ ncaam_a1_eigenvalues |>
   labs(caption = plot_caption)
 ```
 
-We use the approximated eigenvalue to compute the approximate eigenvector. We can use this eigenvector to compute rankings for NCAA men's basketball teams following the 2023-24 season. The rankings are shown below for the AP top 10 teams.
+We use the approximated eigenvalue to compute the approximate eigenvector. We can use this eigenvector to compute rankings for NCAA men's basketball teams following the 2023-24 season. The rankings are shown below for the AP top 25 teams, showing that the win-loss method is an ineffective ranking scheme for NCAA men's basketball.
 
 ```{r ranking-comparison}
-ncaam_a1_eigenvalues |> 
-  rankings_from_eigenvalues() |> 
-  head(10) |> 
+ncaam_a1_ranks <- 
+  ncaam_a1_eigenvalues |> 
+  rankings_from_eigenvalues()
+
+ncaam_a1_ap_comparison <- 
+  ncaam_a1_ranks |> 
+  inner_join(ap, by = "team") |> 
+  left_join(game_data_summary(ncaam), by = "team")
+
+ncaam_a1_ap_comparison |> 
+  plot_rank_comparison() +
+  labs(
+    title = "Performance of ranking approximation", 
+    caption = "The win-loss ranking method is an ineffective ranking method.")
+```
+
+<br>
+
+### Additional Ranking Methods
+
+Additional variations of $a_{ij}$ did not produce better results. We used proportion of points, scored, various polynomial functions, distance between points scored, etc as values for $a_{ij}$.
+
+To compare impact of values of $a_{ij}$ on the resulting eigenvalues, we calculated the sum of squared difference between the eigenvector and the win-ratio. We denote this sum of squared difference for a matrix $A_{i}$ $\vec e_{i}$ where $i$ denotes the ranking function used to create the matrix $A_{i}$. Let $\vec v_{i}$ denote the ranking vector for $A_{i}$ and $\vec w_{i}$ denote the win-ratio's for the teams in matrix $A_{i}$. Then,
+
+$$
+\vec e_{i}=(\vec v_{i}-\vec w_{i})^2
+$$
+
+The best performing matrix is the $A_{i}$ that minimizes $\vec e_{i}$. We denote this matrix $A^*$, with entries $a^*_{ij}$.
+
+The table below shows a summary of each $A_{i}$ with its corresponding $e_{i}$.
+
+```{r}
+eigenvalue_pipeline <- function(ranking_table_func, data) {
+  data |> 
+    ranking_table_func() |> 
+    to_matrix() |> 
+    eigenvalues_power_method() |> 
+    rankings_from_eigenvalues() |> 
+    dplyr::left_join(game_data_summary(data), by = "team")
+}
+
+ranking_functions <- list(
+  direct_win_loss = ranking_table_prep_direct_win_loss,
+  points_abs_distance = ranking_table_prep_points_abs_distance,
+  points_difference_cond = ranking_table_prep_points_difference_cond,
+  points_inverse = ranking_table_prep_points_inverse,
+  points_inverse2 = ranking_table_prep_points_inverse2,
+  points_inverse3 = ranking_table_prep_points_inverse3,
+  points_polynomial1 = ranking_table_prep_points_polynomial1,
+  points_polynomial2 = ranking_table_prep_points_polynomial2,
+  points_polynomial3 = ranking_table_prep_points_polynomial3,
+  points_polynomial4 = ranking_table_prep_points_polynomial4,
+  points_polynomial5 = ranking_table_prep_points_polynomial5,
+  points_proportion = ranking_table_prep_points_proportion,
+  points_scored_mean = ranking_table_prep_points_scored_mean,
+  points_sqrt_points = ranking_table_prep_points_sqrt_points,
+  points_squared_distance = ranking_table_prep_points_squared_distance,
+  points_run_up = ranking_table_prep_point_run_up
+)
+
+all_results <- function(data) {
+  eigenvalue_pipeline_func <- function(func) eigenvalue_pipeline(func, data)
+  purrr::map(ranking_functions, eigenvalue_pipeline_func)
+}
+
+ncaam_results <- all_results(ncaam)
+
+ncaam_results_error <- 
+  ncaam_results |> 
+  map(mutate, e = (eigenvector - wr)^2) |> 
+  map_dbl(~sum(.$e)) |> 
+  sort() |> 
+  enframe("ranking_table_name", "e")
+
+top_ncaam_result <- ncaam_results[[ncaam_results_error$ranking_table_name[1]]]
+
+ncaam_results_error |> 
+  head(5) |> 
   gt() |> 
-  fmt_number(columns = "eigenvector", decimals = 4) |> 
-  fmt_integer(columns = "rank") |> 
-  tab_caption("Rankings for teams finishing in the AP top 10 as calculated by the win-loss method")
+  fmt_number(columns = c("e"), decimals = 3) |> 
+  tab_caption("Table showing the top five ranking matrices with corresponding error metrics")
+```
+
+<br>
+
+The best performing table is the table with entries $a_{ij}$ constructed with the proportion of points scored in each game. Let $s_{i}$ denote a team's score in a game, where $s_{j}$ denotes the opponent's score.
+
+$$
+a^*_{ij}=\frac{s_{i}}{s_{i}+s_{j}}
+$$
+
+The figure below shows the eigenvalues plotted against the win-ratio's for all 362 teams in the data using $a^*_{ij}$ as the entries for $A^*$. We also included plotted the linear regression line between the two points, for reference. We can see that for the full league, the eigenvalues bear little relationship to the win-ratios, suggesting that none of the tested ranking methods are effective at ranking the entire NCAA.
+
+```{r}
+ncaam_results[[ncaam_results_error$ranking_table_name[1]]] |> 
+  ggplot() +
+  aes(eigenvector, wr) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Win rate vs approximated strength",
+    caption = "The top performing ranking scheme, plotted here against the win-ratios for the 362 teams in the dataset, is ineffective at ranking the entire NCAA")
+```
+
+<br>
+
+### Sparsity
+
+One issue effecting results in the sparsity of the ranking matrices we are using. When analyzing the matrix comprised of 362 teams x 362 teams, most of whom do not face each other in the regular season, the matrix is going to be mostly sparse.
+
+To explore the role of sparsity, we look at a second, filtered dataset, comprising of in-conference games between PAC-12 teams. That is, we only look at games in which two PAC-12 teams played each other. The figure below shows the same 5 ranking schemes are the most effective ranking schemes.
+
+```{r}
+pac12_results <- all_results(pac12)
+
+pac12_results_error <- 
+  pac12_results |> 
+  map(mutate, e = (eigenvector - wr)^2) |> 
+  map_dbl(~sum(.$e)) |> 
+  sort() |> 
+  enframe("ranking_table_name", "e")
+
+pac12_top_result <- pac12_results[[pac12_results_error$ranking_table_name[1]]]
+
+pac12_results_error |> 
+  head(5) |> 
+  gt() |> 
+  fmt_number(columns = c("e"), decimals = 3) |> 
+  tab_caption("Table showing the top five ranking matrices with corresponding error metrics")
+```
+
+<br>
+
+Looking at the relationship between the eigenvector and the win-ratio, we see a much stronger relationship, suggesting sparsity limits the effectiveness of theme ranking schemes.
+
+```{r}
+pac12_top_result |> 
+  ggplot() +
+  aes(eigenvector, wr) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Win rate vs approximated strength",
+    caption = "When limited to conference play, the ranking method via proportion is an effective ranking method."
+  )
 ```

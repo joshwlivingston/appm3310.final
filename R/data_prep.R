@@ -14,7 +14,8 @@
 #' @return A tibble
 #' @export
 read_ncaa_data <- function(league) {
-  if (league != "NCAAM") stop(sprintf("Input `league` must be 'NCAAM' not %s", league))
+  if (!(league %in% c("NCAAM", "PAC12")))
+    stop(sprintf("Input `league` must be 'NCAAM' or 'PAC12' not '%s'", league))
   googlesheets4::read_sheet(googlesheet_url(), sheet = league, skip = 1)
 }
 
@@ -64,6 +65,41 @@ clean_ncaa_data <- function(ncaa_data) {
   return(data_out)
 }
 
+#' NCAA game data summary
+#'
+#' Returns a summary of wins, losses, and win-ratio given ncaa data. Use `ncaam` or
+#'   `pac12` as data sources.
+#'
+#' @param ncaa_data NCAA data loaded and cleaned
+#'
+#' @return A tibble with four columns: team, w, l, wr
+#' @export
+game_data_summary <- function(ncaa_data) {
+  wr_data <-
+    ncaa_data |>
+    dplyr::group_by(.data$team, .data$result) |>
+    dplyr::summarise(n = dplyr::n(), .groups = "drop") |>
+    tidyr::pivot_wider(id_cols = "team", names_from = "result", values_from = "n") |>
+    dplyr::select("team", w = "W", l = "L") |>
+    dplyr::mutate(wr = .data$w / (.data$w + .data$l)) |>
+    dplyr::arrange(dplyr::desc(.data$wr))
+
+  score_data <-
+    ncaa_data |>
+    dplyr::group_by(.data$team) |>
+    dplyr::summarise(
+      avg_points_scored = mean(.data$team_score),
+      avg_pct_points_scored = mean(.data$team_score / (.data$team_score + .data$opp_score)),
+      avg_win_diff = mean(ifelse(.data$result == "W", .data$team_score - .data$opp_score, NA), na.rm = TRUE),
+      avg_loss_diff = mean(ifelse(.data$result == "L", .data$opp_score - .data$team_score, NA), na.rm = TRUE),
+      blowout_ratio = .data$avg_win_diff / .data$avg_loss_diff
+    ) |>
+    dplyr::select(-"avg_loss_diff")
+
+  wr_data |>
+    dplyr::left_join(score_data, by = "team")
+}
+
 
 #' Read NCAA men's basketball rankings
 #'
@@ -72,6 +108,7 @@ clean_ncaa_data <- function(ncaa_data) {
 #' directly with `ap`. For more information, run `?ap`.
 #'
 #' @return A tibble with one column
+#' @export
 read_ap_rankings <- function() {
   googlesheets4::read_sheet(googlesheet_url(), sheet = "AP", skip = 1, col_names = FALSE)
 }
@@ -88,13 +125,20 @@ read_ap_rankings <- function() {
 #'
 #' @importFrom rlang .data
 #' @return A tibble
+#' @export
 clean_ap_rankings <- function(ap_data) {
   ap_data_clean <-
     ap_data |>
     dplyr::rename(x = "...1") |>
     dplyr::transmute(
       team = extract_team(.data$x),
-      ap_rank = stringr::str_extract(.data$x, "\\d+") |> as.integer()
+      ap_rank = stringr::str_extract(.data$x, "\\d+") |> as.integer(),
+      team = dplyr::case_when(
+        team == "UConn" ~ "Connecticut",
+        team == "BYU" ~ "Brigham Young",
+        team == "Saint Mary\u2019s" ~ "St. Mary's (CA)",
+        TRUE ~ team
+      )
     ) |>
     dplyr::arrange(.data$ap_rank)
 
