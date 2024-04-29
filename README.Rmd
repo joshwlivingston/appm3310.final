@@ -25,7 +25,7 @@ You can install the development version of appm3310.final like so:
 
 ```{r install-package, eval=FALSE}
 library(remotes)
-install_git("https://github.com/joshwlivingston/appm3310.final")
+install_git("https://github.com/joshwlivingston/appm3310.final", branch = "final_paper")
 ```
 <br>
 
