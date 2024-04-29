@@ -309,3 +309,13 @@ pac12_top_result |>
     caption = "When limited to conference play, the ranking method via proportion is an effective ranking method."
   )
 ```
+
+The table below shows the ranking for PAC-12 using the proportion ranking matrix.
+
+```{r}
+pac12_top_result |> 
+  select(team, eigenvector, rank, w, l, wr) |> 
+  gt() |> 
+  fmt_number(columns = c("eigenvector", "wr"), decimals = 3) |> 
+  tab_caption("Rankings for in-conference PAC-12 play for the NCAA men's 2023-24 basketball season as obtained via the proportion ranking matrix")
+```
