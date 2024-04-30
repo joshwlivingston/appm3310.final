@@ -287,7 +287,7 @@ $$
 
 The best performing matrix is the $A_{i}$ that minimizes $\vec e_{i}$. We denote this matrix $A^*$, with entries $a^*_{ij}$.
 
-The table below shows a summary of each $A_{i}$ with its corresponding $e_{i}$.
+The table below shows a summary of the top five performing $A_{i}$ with their corresponding $e_{i}$.
 
 ```{r}
 eigenvalue_pipeline <- function(ranking_table_func, data) {
