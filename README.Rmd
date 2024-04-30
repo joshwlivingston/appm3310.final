@@ -25,7 +25,7 @@ You can install the development version of appm3310.final like so:
 
 ```{r install-package, eval=FALSE}
 library(remotes)
-install_git("https://github.com/joshwlivingston/appm3310.final", branch = "final_paper")
+install_git("https://github.com/joshwlivingston/appm3310.final")
 ```
 <br>
 
@@ -141,7 +141,6 @@ ncaam_eigenvalues |> plot_lambdas()
 To compute the rankings, you can call `rankings_from_eigenvalues()`
 ```{r compute-rankings}
 ncaam_eigenvalues |> 
-  rankings_from_eigenvalues() |> 
-  head(10)
+  rankings_from_eigenvalues()
 ```
 <br><br>

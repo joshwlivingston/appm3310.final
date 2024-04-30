@@ -34,7 +34,7 @@ eigenvalues_power_method <- function(mat,
   for (i in 1:iterations) {
     ev_new <- mat %*% ev
     ev_normalized <- ev_new / sqrt(sum(ev_new^2))
-    new_lambda <- t(ev_normalized) %*% mat %*% ev_normalized
+    new_lambda <- (t(mat %*% ev_normalized) %*% ev_normalized) / (t(ev_normalized) %*% ev_normalized)
 
     new_lambda_inf <- identical(new_lambda[1, 1], Inf)
     converged <- abs(new_lambda - old_lamdba) < convergance
@@ -82,7 +82,7 @@ rankings_from_eigenvalues <- function(eigenvalues, name_col = "team") {
 
 #' Plot lambdas from iteration
 #'
-#' We can use this function to view the results of teh power method. When we view this
+#' We can use this function to view the results of the power method. When we view this
 #' plot we should see our lambda converging.
 #'
 #' @param eigenvalues The result of [eigenvalues_power_method()]
@@ -95,5 +95,31 @@ plot_lambdas <- function(eigenvalues) {
     ggplot2::ggplot() +
     ggplot2::aes(.data$iter, .data$lambda) +
     ggplot2::geom_line() +
+    ggplot2::theme_minimal()
+}
+
+
+#' Plot rankings compared against AP rankings
+#'
+#' We can use this function to view the results of the power method. When we view this
+#' plot we may notice similarity between the rankings computed and the AP ranking
+#'
+#' @param comp_table A tibble containing at least two columns: `rank` and `ap_rank`
+#'
+#' @return A ggplot2 plot
+#' @importFrom rlang .data
+#' @export
+plot_rank_comparison <- function(comp_table) {
+  if (!all(c("rank", "ap_rank") %in% names(comp_table)))
+    stop("Columns `rank` and `ap_rank` must be present in data to plot comparison")
+
+  max_rank <- max(comp_table$rank)
+  comp_table |>
+    ggplot2::ggplot() +
+    ggplot2::aes(.data$rank, .data$ap_rank) +
+    ggplot2::geom_point() +
+    ggplot2::geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+    ggplot2::xlim(0, max_rank) +
+    ggplot2::ylim(0, max_rank) +
     ggplot2::theme_minimal()
 }

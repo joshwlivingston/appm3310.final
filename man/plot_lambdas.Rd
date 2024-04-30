@@ -13,6 +13,6 @@ plot_lambdas(eigenvalues)
 A ggplot2 plot
 }
 \description{
-We can use this function to view the results of teh power method. When we view this
+We can use this function to view the results of the power method. When we view this
 plot we should see our lambda converging.
 }
