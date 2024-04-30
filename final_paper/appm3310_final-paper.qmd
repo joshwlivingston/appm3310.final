@@ -79,7 +79,7 @@ Every spring, the discourse surrounding collegiate basketball reaches its zenith
 
 Our group's interest in the ranking of collegiate basketball teams peaked during this year's March Madness tournament, where several high-seeded teams succumbed to the unexpected triumphs of lower-seeded opponents. These upsets pushed our group to envision a future where a mathematically-driven ranking system could not only corroborate traditional voter-based polls but also enhance the precision of predicting teams' success in tournaments.
 
-The difficulty in developing a ranking scheme in this type of system stems from the concept of uneven paired competition (UEPC), or comparison. In a UEPC based system, the outcomes of any paired comparison, or competition in the case of sports, is known but the full set of outcomes is incomplete. In the case of college basketball, this UEPC system has known outcomes (wins or losses) for a given game (comparison) throughout the  season, but is incomplete as not every college team plays each other. In his paper, *The Perron-Frobenius Theorem and the Ranking of Football Teams*, James P Keener [@keener_1993_the] discovered that many ranking methodologies heavily leveraged the Perron-Frobenius theorem, which provided an elegant solution to the challenge of uneven paired competition.
+The difficulty in developing a ranking scheme in this type of system stems from the concept of uneven paired competition (UEPC), or comparison. In a UEPC based system, the outcomes of any paired comparison, or competition in the case of sports, is known but the full set of outcomes is incomplete. In the case of college basketball, this UEPC system has known outcomes (wins or losses) for a given game (comparison) throughout the season, but is incomplete as not every college team plays each other. In his paper, *The Perron-Frobenius Theorem and the Ranking of Football Teams*, James P Keener [@keener_1993_the] discovered that many ranking methodologies heavily leveraged the Perron-Frobenius theorem, which provided an elegant solution to the challenge of uneven paired competition.
 
 This paper aimed to expand Keener’s work to the world of NCAA Men’s Basketball as it delved into various ranking methods, highlighting the utilization of the Perron-Frobenius theorem, eigenvalue computation techniques, fixed-point theorems, and probabilistic modeling. Each of the methods discussed in this paper formulate a ranking problem as a linear eigenvalue problem, directly applying the Perron-Frobenius theorem. Through various solutions to the entries of our matrix were we able to develop varying ranking schemes that prioritize different elements of college basketball to reveal the best.
 
@@ -99,7 +99,7 @@ $$
 s_{i}=\frac {1}{n_{i}}\sum_{j=1}^{N}a_{ij}r_{j}
 $$
 
-with $a_{ij}$ being a nonnegative number depending on the aforementioned factors between teams $i$ and $j$ [@keener_1993_the]. $N$ will be the total number of teams in the system, which in our case will be larger than simply the teams that were allowed to play in March Madness, as we will require more data points to increase the rigidity of the standings. We will also have a focus on the PAC12 Conference, as it will be easier to see the effectiveness of this method relative to both their conference records, but also their AP Rankings and their ultimate performances in the March Madness tournament.
+with $a_{ij}$ being a non-negative number depending on the aforementioned factors between teams $i$ and $j$ [@keener_1993_the]. $N$ will be the total number of teams in the system, which in our case will be larger than simply the teams that were allowed to play in March Madness, as we will require more data points to increase the rigidity of the standings. We will also have a focus on the PAC12 Conference, as it will be easier to see the effectiveness of this method relative to both their conference records, but also their AP Rankings and their ultimate performances in the March Madness tournament.
 
 The matrix $A$ with entries $a_{ij}$ is referred to as a preference matrix. In our case, we will notate the entry of $a_{ij}$ as 1 if team $i$ is victorious, or 0 if the game is lost. There is also a column for draws, with an entry value of ½, but these will always be empty as there are no draws in collegiate basketball, yet this column will be valuable for use in other applications. The reason why the sum will be divided by $n_{ij}$, the number of matches between teams $i$ and $j$, is to ensure teams cannot accumulate and artificially large score through playing more games than their competitors.
 
@@ -111,7 +111,7 @@ $$
 
 where $A$ is the matrix containing entries ${a_{ij}}$. Thus, the ranking vector $\vec r$ is a positive eigenvector from the positive matrix A [@keener_1993_the].
 
-The Perron-Frobenius Theorem tells us that when the non-trivial matrix A has nonnegative entries, there exists an eigenvector $\vec r$ with nonnegative entries, which have a corresponding eigenvector $\lambda$. Furthermore, if $A$ is irreducible, eigenvector $\vec r$ will have only unique and positive entries.
+The Perron-Frobenius Theorem tells us that when the non-trivial matrix A has non-negative entries, there exists an eigenvector $\vec r$ with non-negative entries, which have a corresponding eigenvector $\lambda$. Furthermore, if $A$ is irreducible, eigenvector $\vec r$ will have only unique and positive entries.
 
 In order to calculate the eigenvector, we can take advantage of the power method - namely, the fact that the ranking vector $\vec r$ will correspond to the largest eigenvalue of $A$; i.e.:
 
@@ -119,9 +119,9 @@ $$
 \lim_{n\to \infty}\frac {A^n\vec r_{0}}{\left| A^n\vec r_{0} \right|}=\vec r
 $$
 
-for an nonnegative vector $\vec r_{0}$.
+for an non-negative vector $\vec r_{0}$.
 
-Initially, with the system devised, all teams would be given an initial ranking of one. Then the $i^{th}$ component of the vector $A^2\vec r_{0}$ would represent the average winning percentage of the teams defeated by team $i$ [@Wei1952TheAF]. Thus, this component of the vector would provide the reader with information regarding the strength of a teams schedule, and it is arguably a stronger metric than simply winning percentage. The predominant issue with this figure is that it places such a significant portion of the score on the strength of the schedule. 
+Initially, with the system devised, all teams would be given an initial ranking of one. Then the $i^{th}$ component of the vector $A^2\vec r_{0}$ would represent the average winning percentage of the teams defeated by team $i$ [@Wei1952TheAF]. Thus, this component of the vector would provide the reader with information regarding the strength of a teams schedule, and it is arguably a stronger metric than simply winning percentage. The predominant issue with this figure is that it places such a significant portion of the score on the strength of the schedule.
 
 This system works really well for systems where teams play each other often during a season, and have different schedules i.e the NBA and MLB regular seasons (no team plays every team the same amount of times). In this case, $a_{ij}$ will be the total victories of team $i$ over $j$. Intuitively, with more and more games, this system will become a superior indicator of the relative strength of the two teams.
 
@@ -159,7 +159,7 @@ where $s(x)$ is the sign of $x$ [@keener_1993_the].
 
 We obtained team-game level data from [sports-reference.com](https://stathead.com/basketball/cbb/team-game-finder.cgi?request=1&comp_type=reg&game_status=1&order_by=date&match=team_game&year_max=2024&order_by_asc=1&timeframe=seasons&comp_id=NCAAM&year_min=2024) for the 2023-24 NCAA men's regular season. After doing basic data preparation, we bundled the data in an R package in this report. The R package, including the data and code for the computation, figures, and tables, is available on [Github](https://github.com/joshwlivingston/appm3310.final).
 
-A sample of the data is available below. In total we have a 10,654 x 7 dataset. There are two rows per game in, one row per team. And for each team-game thereare 7 columns: the team, date, home/away designation, opponent, result, team's score, and opponent's score.
+A sample of the data is available below. In total we have a 10,654 x 7 dataset. There are two rows per game in, one row per team. And for each team-game there are 7 columns: the team, date, home/away designation, opponent, result, team's score, and opponent's score.
 
 ```{r preview-data}
 #| fig-align: center
@@ -193,7 +193,9 @@ ncaam_a1_tbl |>
 
 <br>
 
-In matrix notation, the matrix $B$ is $$ 
+In matrix notation, the matrix $B$ is
+
+$$ 
 B=\begin{pmatrix} 0 & 0 & 0 & 0 \\ 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{pmatrix}
 $$
 
@@ -223,7 +225,11 @@ A potential downside to this method, is that teams that have never matched have 
 
 We denote the eigenvalue $\lambda$ for matrix $A_{1}$ as $\lambda_{1}$.
 
-To approximate $\lambda_{1}$, we employ the power method. At each step of the power method, we compute the approximate eigenvalue $\lambda_{1i}$ where $i$ is the iteration step of the power method approximation, and $$\lim_{i  \to \infty} \lambda_{1i}=\lambda_{1}$$
+To approximate $\lambda_{1}$, we employ the power method. At each step of the power method, we compute the approximate eigenvalue $\lambda_{1i}$ where $i$ is the iteration step of the power method approximation, and
+
+$$
+\lim_{i  \to \infty} \lambda_{1i}=\lambda_{1}
+$$
 
 After approximation, we observe $\lambda_{1i}$ converging to $\lambda_{1}$, shown in the figure below.
 
