@@ -14,7 +14,7 @@ You can install the development version of appm3310.final like so:
 
 ``` r
 library(remotes)
-install_git("https://github.com/joshwlivingston/appm3310.final", branch = "final_paper")
+install_git("https://github.com/joshwlivingston/appm3310.final")
 ```
 
 <br>
@@ -200,9 +200,8 @@ To compute the rankings, you can call `rankings_from_eigenvalues()`
 
 ``` r
 ncaam_eigenvalues |> 
-  rankings_from_eigenvalues() |> 
-  head(10)
-#> # A tibble: 10 × 3
+  rankings_from_eigenvalues()
+#> # A tibble: 362 × 3
 #>    team             eigenvector  rank
 #>    <chr>                  <dbl> <dbl>
 #>  1 Michigan State        0.100      1
@@ -215,6 +214,7 @@ ncaam_eigenvalues |>
 #>  8 Texas State           0.0846     8
 #>  9 Eastern Illinois      0.0844     9
 #> 10 High Point            0.0843    10
+#> # ℹ 352 more rows
 ```
 
 <br><br>
