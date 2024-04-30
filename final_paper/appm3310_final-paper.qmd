@@ -279,7 +279,7 @@ $$
 \vec q_{i}=\frac {\vec w_{i}}{\vec w_{i} + \vec l_{i}}
 $$
 
-where $\vec w_{i}$ represents the number of team $i$'s wins in a given season and $\vec l_{i}$ represents the number of team $i$'s losses. That leads us to the following definition of $\vec e_{i}$:
+where $\vec w_{i}$ represents the vector of teams' wins for a given ranking method in a given season and $\vec l_{i}$ represents the vector of teams' losses. That leads us to the following definition of $\vec e_{i}$:
 
 $$
 \vec e_{i}=(\vec r_{i}-\vec q_{i})^2
