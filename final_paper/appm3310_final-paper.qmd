@@ -109,11 +109,11 @@ $$
 A\vec r=\lambda\vec r
 $$
 
-where $A$ is the matrix containing entries ${a_{ij}}$. Thus, the ranking vector r is a positive eigenvector from the positive matrix A [@keener_1993_the].
+where $A$ is the matrix containing entries ${a_{ij}}$. Thus, the ranking vector $\vec r$ is a positive eigenvector from the positive matrix A [@keener_1993_the].
 
 The Perron-Frobenius Theorem tells us that when the non-trivial matrix A has nonnegative entries, there exists an eigenvector $\vec r$ with nonnegative entries, which have a corresponding eigenvector $\lambda$. Furthermore, if $A$ is irreducible, eigenvector $\vec r$ will have only unique and positive entries.
 
-In order to calculate the eigenvector, we can take advantage of the power method - namely, the fact that the ranking vector $\vec r$ will correspond to the largest eigenvalue of $A$, ie:
+In order to calculate the eigenvector, we can take advantage of the power method - namely, the fact that the ranking vector $\vec r$ will correspond to the largest eigenvalue of $A$; i.e.:
 
 $$
 \lim_{n\to \infty}\frac {A^n\vec r_{0}}{\left| A^n\vec r_{0} \right|}=\vec r
@@ -121,7 +121,7 @@ $$
 
 for an nonnegative vector $\vec r_{0}$.
 
-Initially, with the system devised, all teams would be given an initial ranking of one. Then the $i^{th}$ component of the vector $A^2\vec r_{0}$ would represent the average winning percentage of the teams defeated by team $i$ [@Wei1952TheAF]. Thus, this component of the vector would provide the reader with information regarding the strength of a teams schedule, and it is arguably a stronger metric than simply winning percentage. The predominant issue with this figure is that it places such a significant portion of the score of the strength of the schedule. 
+Initially, with the system devised, all teams would be given an initial ranking of one. Then the $i^{th}$ component of the vector $A^2\vec r_{0}$ would represent the average winning percentage of the teams defeated by team $i$ [@Wei1952TheAF]. Thus, this component of the vector would provide the reader with information regarding the strength of a teams schedule, and it is arguably a stronger metric than simply winning percentage. The predominant issue with this figure is that it places such a significant portion of the score on the strength of the schedule. 
 
 This system works really well for systems where teams play each other often during a season, and have different schedules i.e the NBA and MLB regular seasons (no team plays every team the same amount of times). In this case, $a_{ij}$ will be the total victories of team $i$ over $j$. Intuitively, with more and more games, this system will become a superior indicator of the relative strength of the two teams.
 
@@ -238,7 +238,7 @@ iterations_a1 <- nrow(eigenvalue_table_a1)
 eigenvalue_a1 <- eigenvalue_table_a1$lambda[iterations_a1]
 
 plot_caption <- sprintf(
-  "Figure 1: values of lambda converge to approximately %.3f after %i iterations",
+  "Values of lambda converge to approximately %.3f after %i iterations.\nFigure 1",
   eigenvalue_a1, iterations_a1
 )
 
@@ -264,7 +264,7 @@ ncaam_a1_ap_comparison |>
   plot_rank_comparison() +
   labs(
     title = "Performance of ranking approximation", 
-    caption = "Figure 2: The win-loss ranking method is an ineffective ranking method.")
+    caption = "The win-loss ranking method is an ineffective ranking method.\nFigure 2")
 ```
 
 <br>
@@ -360,7 +360,7 @@ ncaam_results[[ncaam_results_error$ranking_table_name[1]]] |>
   theme_minimal() +
   labs(
     title = "Win rate vs approximated strength",
-    caption = "Figure 3: The top performing ranking scheme, plotted here against the win-ratios for the 362 teams in the dataset, is ineffective at ranking the entire NCAA")
+    caption = "The top performing ranking scheme is ineffective at ranking the entire NCAA\nFigure 3")
 ```
 
 <br>
@@ -403,7 +403,7 @@ pac12_top_result |>
   theme_minimal() +
   labs(
     title = "Win rate vs approximated strength",
-    caption = "Figure 4: When limited to conference play, the ranking method via proportion is an effective ranking method."
+    caption = "When limited to conference play, the ranking method via proportion is an effective ranking method.\nFigure 4"
   )
 ```
 
