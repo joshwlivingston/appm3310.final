@@ -11,7 +11,27 @@ format:
     links-as-notes: true
 author: "Hugo Hinckfuss, Josh Livingston, Magnus Miller (Section #002)"
 date: 2024-04-29
-abstract: The following paper discussed the derivation and development of multiple ranking schemes used to rank Men’s NCAA College basketball teams in uneven paired competition (UEPC). This paper’s motive to explore ranking schemes stems from the work of James P Keener who first used similar strategies in an application to rank college football teams. Through the direct use of the Perron-Frobenius theorem and numerical experiments to derive eigenvalues and eigenvectors, this paper developed a ranking scheme for uneven paired competition directly using the Perron-Frobenius theorem using a base matrix comprised of wins and losses. This paper then expanded by considering other preference matrices to compare which include proportion of points scored and the square-root of points scored among others, eventually comparing them to the existing ranking methods such as the AP Coaches Poll. Results showed that limitations in the original UEPC system in terms of sparsity heavily hinder the ranking schemes that can be developed in this manner. Taking this into account, however, by taking Keener’s original work for ranking college football teams and applying the same methodology to college basketball, this paper has shown that with small alterations to the Perron-Frobenius theorem and through experimentation, similar ranking schemes can be developed for any other uneven paired competition based sport or event.
+abstract: >
+  The following paper discussed the derivation and development of multiple
+  ranking schemes used to rank Men’s NCAA College basketball teams in uneven
+  paired competition (UEPC). This paper’s motive to explore ranking schemes
+  stems from the work of James P Keener who first used similar strategies in
+  an application to rank college football teams. Through the direct use of
+  the Perron-Frobenius theorem and numerical experiments to derive
+  eigenvalues and eigenvectors, this paper developed a ranking scheme for
+  uneven paired competition directly using the Perron-Frobenius theorem
+  using a preference matrix comprised of wins and losses. This paper then
+  expanded by considering other preference matrices to compare which include
+  proportion of points scored and the square-root of points scored among
+  others, eventually comparing them to the existing ranking methods such as
+  the AP Coaches Poll. Results showed that limitations in the original UEPC
+  system in terms of sparsity heavily hinder the ranking schemes that can be
+  developed in this manner. Understanding this, however, by taking Keener’s
+  original work for ranking college football teams and applying the same
+  methodology to college basketball, this paper has shown that with small
+  alterations to the Perron-Frobenius theorem and through experimentation,
+  similar ranking schemes can be developed for any other uneven paired
+  competition based sport or event.
 bibliography: references.bib
 biblio-title: References
 biblio-style: authoryear
@@ -59,11 +79,11 @@ Every spring, the discourse surrounding collegiate basketball reaches its zenith
 
 Our group's interest in the ranking of collegiate basketball teams peaked during this year's March Madness tournament, where several high-seeded teams succumbed to the unexpected triumphs of lower-seeded opponents. These upsets pushed our group to envision a future where a mathematically-driven ranking system could not only corroborate traditional voter-based polls but also enhance the precision of predicting teams' success in tournaments.
 
-The difficulty in developing a ranking scheme in this type of system stems from the concept of uneven paired competition (UEPC), or comparison. In a UEPC based system, the outcomes of any paired comparison, or competition in the case of sports, is known but the full set of outcomes is incomplete. In the case of college basketball, this UEPC system has known outcomes (wins or losses) for a given game (comparison) throughout the  season, but is incomplete as not every college team plays each other. In his paper, *The Perron-Frobenius Theorem and the Ranking of Football Teams*, James P Keener [@keener_1993_the] discovered that many ranking methodologies heavily leveraged the Perron-Frobenius theorem, which provided an elegant solution to the challenge of uneven paired competition. 
+The difficulty in developing a ranking scheme in this type of system stems from the concept of uneven paired competition (UEPC), or comparison. In a UEPC based system, the outcomes of any paired comparison, or competition in the case of sports, is known but the full set of outcomes is incomplete. In the case of college basketball, this UEPC system has known outcomes (wins or losses) for a given game (comparison) throughout the  season, but is incomplete as not every college team plays each other. In his paper, *The Perron-Frobenius Theorem and the Ranking of Football Teams*, James P Keener [@keener_1993_the] discovered that many ranking methodologies heavily leveraged the Perron-Frobenius theorem, which provided an elegant solution to the challenge of uneven paired competition.
 
 This paper aimed to expand Keener’s work to the world of NCAA Men’s Basketball as it delved into various ranking methods, highlighting the utilization of the Perron-Frobenius theorem, eigenvalue computation techniques, fixed-point theorems, and probabilistic modeling. Each of the methods discussed in this paper formulate a ranking problem as a linear eigenvalue problem, directly applying the Perron-Frobenius theorem. Through various solutions to the entries of our matrix were we able to develop varying ranking schemes that prioritize different elements of college basketball to reveal the best.
 
-This paper first develops an understanding of the Perron-Frobenius theorem through a pseudo-derivation of the theorem and expands on the mathematical formulation used throughout the development of the ranking schemes later introduced. The paper then builds on the Perron-Frobenius theorem to develop a direct ranking approach using wins and losses. Later the paper expands on this method deriving ranking priorities based on other factors of the game such as proportion of points scored and square root of points scored among others. Following the development of the ranking schemes, the paper analyzes the effectiveness of the proposed ranking schemes in comparison to the AP Top 25 poll and proposed hypotheses as to the successes and failures of the modeled schemes accuracy and validity. 
+This paper first develops an understanding of the Perron-Frobenius theorem through a pseudo-derivation of the theorem and expands on the mathematical formulation used throughout the development of the ranking schemes later introduced. The paper then builds on the Perron-Frobenius theorem to develop a direct ranking approach using wins and losses. Later the paper expands on this method deriving ranking priorities based on other factors of the game such as proportion of points scored and square root of points scored among others. Following the development of the ranking schemes, the paper analyzes the effectiveness of the proposed ranking schemes in comparison to the AP Top 25 poll and proposed hypotheses as to the successes and failures of the modeled schemes accuracy and validity.
 
 Ultimately, we concluded by presenting the results derived from the application of these diverse ranking systems, aiming to showcase a collegiate basketball ranking that more accurately reflected the true capabilities of teams participating in March Madness. In the end, however, we discuss how the sparsity of the data used in constructing our base matrices percolates throughout the formulation of our ranking schemes making it difficult to assess their viability. We propose, however, that due to the limitation of the original dataset, these ranking schemes may be better applied to NBA basketball where the UEPC is less uneven.
 
@@ -71,17 +91,17 @@ Ultimately, we concluded by presenting the results derived from the application 
 
 ### The Direct Method
 
-This first method is regarded as the most direct method in ranking entities. In this method, we will simply assign a score to a team, depending on their result against an opposing team. The score $a_{ij}$ given to the team will depend on the strength of the opponent, the margin of the scoring and the outcome of the game (win, loss or draw). 
+This first method is regarded as the most direct method in ranking entities. In this method, we will simply assign a score to a team, depending on their result against an opposing team. The score $a_{ij}$ given to the team will depend on the strength of the opponent, the margin of the scoring and the outcome of the game (win, loss or draw).
 
-We will introduce the vector $\vec r$, which will represent the ranking values of teams, with positive component $r_{j}$ representing the strength of the $j^{th}$ team (the opposition team). Then, the score for team $i$ will be defined as 
+We will introduce the vector $\vec r$, which will represent the ranking values of teams, with positive component $r_{j}$ representing the strength of the $j^{th}$ team (the opposition team). Then, the score for team $i$ will be defined as
 
 $$
 s_{i}=\frac {1}{n_{i}}\sum_{j=1}^{N}a_{ij}r_{j}
 $$
 
-with $a_{ij}$ being a nonnegative number depending on the aforementioned factors between teams $i$ and $j$ [@keener_1993_the]. $N$ will be the total number of teams in the system, which in our case will be larger than simply the teams that were allowed to play in March Madness, as we will require more data points to increase the rigidity of the standings. We will also have a focus on the PAC12 Conference, as it will be easier to see the effectiveness of this method relative to both their conference records, but also their AP Rankings and their ultimate performances in the March Madness tournament. 
+with $a_{ij}$ being a nonnegative number depending on the aforementioned factors between teams $i$ and $j$ [@keener_1993_the]. $N$ will be the total number of teams in the system, which in our case will be larger than simply the teams that were allowed to play in March Madness, as we will require more data points to increase the rigidity of the standings. We will also have a focus on the PAC12 Conference, as it will be easier to see the effectiveness of this method relative to both their conference records, but also their AP Rankings and their ultimate performances in the March Madness tournament.
 
-The matrix $A$ with entries $a_{ij}$ is referred to as a preference matrix. In our case, we will notate the entry of $a_{ij}$ as 1 if team $i$ is victorious, or 0 if the game is lost. There is also a column for draws, with an entry value of ½, but these will always be empty as there are no draws in collegiate basketball, yet this column will be valuable for use in other applications. The reason why the sum will be divided by $n_{ij}$, the number of matches between teams $i$ and $j$, is to ensure teams cannot accumulate and artificially large score through playing more games than their competitors. 
+The matrix $A$ with entries $a_{ij}$ is referred to as a preference matrix. In our case, we will notate the entry of $a_{ij}$ as 1 if team $i$ is victorious, or 0 if the game is lost. There is also a column for draws, with an entry value of ½, but these will always be empty as there are no draws in collegiate basketball, yet this column will be valuable for use in other applications. The reason why the sum will be divided by $n_{ij}$, the number of matches between teams $i$ and $j$, is to ensure teams cannot accumulate and artificially large score through playing more games than their competitors.
 
 Next, the strength (which will be ordered to provide rank) of a participant will be a function of the team’s score, given by
 
@@ -218,7 +238,7 @@ iterations_a1 <- nrow(eigenvalue_table_a1)
 eigenvalue_a1 <- eigenvalue_table_a1$lambda[iterations_a1]
 
 plot_caption <- sprintf(
-  "Values of lambda converge to approximately %.3f after %i iterations",
+  "Figure 1: values of lambda converge to approximately %.3f after %i iterations",
   eigenvalue_a1, iterations_a1
 )
 
@@ -244,7 +264,7 @@ ncaam_a1_ap_comparison |>
   plot_rank_comparison() +
   labs(
     title = "Performance of ranking approximation", 
-    caption = "The win-loss ranking method is an ineffective ranking method.")
+    caption = "Figure 2: The win-loss ranking method is an ineffective ranking method.")
 ```
 
 <br>
@@ -340,7 +360,7 @@ ncaam_results[[ncaam_results_error$ranking_table_name[1]]] |>
   theme_minimal() +
   labs(
     title = "Win rate vs approximated strength",
-    caption = "The top performing ranking scheme, plotted here against the win-ratios for the 362 teams in the dataset, is ineffective at ranking the entire NCAA")
+    caption = "Figure 3: The top performing ranking scheme, plotted here against the win-ratios for the 362 teams in the dataset, is ineffective at ranking the entire NCAA")
 ```
 
 <br>
@@ -383,7 +403,7 @@ pac12_top_result |>
   theme_minimal() +
   labs(
     title = "Win rate vs approximated strength",
-    caption = "When limited to conference play, the ranking method via proportion is an effective ranking method."
+    caption = "Figure 4: When limited to conference play, the ranking method via proportion is an effective ranking method."
   )
 ```
 
@@ -398,3 +418,17 @@ pac12_top_result |>
 ```
 
 ## Discussion
+
+The exploration of ranking methodologies for NCAA Men’s Basketball has yielded insightful findings regarding the challenges and potential solutions in devising effective ranking systems moving forward. Our investigation was motivated by the prevalent subjective nature of traditional polls and rankings, which often lead to discrepancies and frustrations among fans and stakeholders especially during March Madness selection.
+
+One of the central challenges addressed in this paper was the concept of uneven paired competition (UEPC), inherent in collegiate basketball due to a large number of participating teams and very short schedules (in comparison). This challenge faced by all ranking metrics, as identified by Keener in his work on college football teams, highlights the importance of leveraging mathematical tools like the Perron-Frobenius theorem to tackle the complexities of ranking systems in sports with incomplete data sets. Our exploration focused on tackling the UEPC issue in the world of NCAA Men’s Basketball similar to how Keener formulated his ranking schemes using the Perron-Frobenius theorem. Keener’s framework which uses the Perron-Frobenius theorem served as a great base to work from as it provides a way to directly calculate an ordered vector of teams from an original preference matrix which can be specified and defined based on elements of the system one is analyzing. Using basic linear algebra principles such as eigenvector and eigenvalue calculations, we developed a direct ranking approach. In the original attempt, the preference matrix was designed to contain win-loss information about head-to-head matchups which was later replaced by other metrics including proportion of points scored and square root of points scored, among others. These methodologies and ranking frameworks aimed to provide a more contextually based and nuanced formulation for ranking teams beyond the AP’s method of considering wins and losses in conjunction with coaches' votes.
+
+Our analysis revealed, however, the numerous limitations and considerations that need to be taken into account when developing a ranking scheme built on the Perron-Frobenius theorem, most notably being the sparsity of the original data. In the case of college basketball, there are simply too many teams that individually do not play enough games. This leads to gaps and missing information necessary for developing a ranking metric using the direct method derived in this paper. The sparsity of data, especially in non-conference matchups, posed challenges in accurately assessing team strengths across the entire NCAA landscape. This sparsity affected the accuracy and effectiveness of ranking schemes, as seen in Figure 2, which compares the Direct Method ranking and the AP ranking and Table 4 which outlines the error associated with the various Direct Method versions compared to the AP poll. In both cases, the data used stems from the analysis of the full NCAA men’s basketball landscape. When these gaps are not considered, as in the case for PAC12 rankings, the sparsity issue disappears as each team plays the others at a more regular frequency as seen in Figure 4 and Table 6.
+
+In conclusion, while our exploration into mathematical ranking methodologies based on the Perron-Frobenius theorem has provided valuable insights and alternative approaches to traditional polls, there are clear limitations to consider as the effectiveness of ranking schemes heavily depends on data availability and the nature of competition within the NCAA.
+
+Moving forward, it is crucial for future researchers to address the issue of sparse data when it comes to developing a direct method ranking scheme based on the Perron-Frobenius theorem as outlined in this paper. Investigations into the use of data augmentation techniques, other factors beyond records and points scored, dataset size, and models for nuanced elements of the game could be the key to developing a full and robust ranking scheme that competes with the AP Poll.
+
+For practical application, our findings suggest that ranking methodologies, particularly those relying the Perron-Frobenius theorem, may find more success when applied to more structured and less sparse data sets such as. in-conference matchups within the NCAA basketball landscape or even in other leagues such as the NBA or MLB.
+
+Ultimately, the pursuit of refining ranking systems in collegiate basketball requires a more multidisciplinary approach, combining mathematical rigor with domain-specific insights to address the nuances and challenges unique to the sport. In order to effectively derive a more fair and less opaque ranking scheme for men’s collegiate basketball that could better suit the March Madness tournament selection format, continued research and refinement are necessary.

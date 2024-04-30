@@ -34,7 +34,7 @@ eigenvalues_power_method <- function(mat,
   for (i in 1:iterations) {
     ev_new <- mat %*% ev
     ev_normalized <- ev_new / sqrt(sum(ev_new^2))
-    new_lambda <- t(ev_normalized) %*% mat %*% ev_normalized
+    new_lambda <- (t(mat %*% ev_normalized) %*% ev_normalized) / (t(ev_normalized) %*% ev_normalized)
 
     new_lambda_inf <- identical(new_lambda[1, 1], Inf)
     converged <- abs(new_lambda - old_lamdba) < convergance
