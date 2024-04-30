@@ -119,9 +119,9 @@ $$
 \lim_{n\to \infty}\frac {A^n\vec r_{0}}{\left| A^n\vec r_{0} \right|}=\vec r
 $$
 
-for an non-negative vector $\vec r_{0}$.
+for an non-negative vector $\vec r_{0}$ [@keener_1993_the].
 
-Initially, with the system devised, all teams would be given an initial ranking of one. Then the $i^{th}$ component of the vector $A^2\vec r_{0}$ would represent the average winning percentage of the teams defeated by team $i$ [@Wei1952TheAF]. Thus, this component of the vector would provide the reader with information regarding the strength of a teams schedule, and it is arguably a stronger metric than simply winning percentage. The predominant issue with this figure is that it places such a significant portion of the score on the strength of the schedule.
+Initially, with the system devised, all teams would be given an initial ranking of one. Then the $i^{th}$ component of the vector $A^2\vec r_{0}$ would represent the average winning percentage of the teams defeated by team $i$ . Thus, this component of the vector would provide the reader with information regarding the strength of a teams schedule, and it is arguably a stronger metric than simply winning percentage. The predominant issue with this figure is that it places such a significant portion of the score on the strength of the schedule.
 
 This system works really well for systems where teams play each other often during a season, and have different schedules i.e the NBA and MLB regular seasons (no team plays every team the same amount of times). In this case, $a_{ij}$ will be the total victories of team $i$ over $j$. Intuitively, with more and more games, this system will become a superior indicator of the relative strength of the two teams.
 
@@ -225,7 +225,7 @@ A potential downside to this method, is that teams that have never matched have 
 
 We denote the eigenvalue $\lambda$ for matrix $A_{1}$ as $\lambda_{1}$.
 
-To approximate $\lambda_{1}$, we employ the power method. At each step of the power method, we compute the approximate eigenvalue $\lambda_{1i}$ where $i$ is the iteration step of the power method approximation, and
+To approximate $\lambda_{1}$, we employ the power method [@Stewart_1973]. At each step of the power method, we compute the approximate eigenvalue $\lambda_{1i}$ where $i$ is the iteration step of the power method approximation, and
 
 $$
 \lim_{i  \to \infty} \lambda_{1i}=\lambda_{1}
